@@ -10,3 +10,14 @@ Added `.specs/ast-component-spec.md` and `.specs/mitosis-compiler-spec.md`, then
 Synced `Roadmap.md`, `README.md`, `Worklist.md` with decisions made so far: backend Laravel → Symfony everywhere (ADR-003), phase order flipped to Mitosis/components-first (ADR-002, Fase 1 is now Compiler & Componentes, backend moved to Fase 3), `Worklist.md` dependencies updated (CP-001 no longer depends on ST-002, CP-001/CP-002 marked in progress), added `HN-001`/`QG-001`/`QG-002` rows and `QA-002`/`QA-003` (Storybook, Cypress) rows.
 
 Added the mandatory component quality gate: `.specs/component-quality-spec.md` (semantic HTML5, WCAG 2.1 AA, mandatory multi-modal access, performance budget, animation-via-tokens), `.specs/component-qa-strategy-spec.md` (3-layer QA: Playwright+axe-core → Storybook → Cypress, documented only, not implemented), `.specs/skills/component-quality-checklist.md`. Logged ADR-005. 12 files touched this session in total.
+
+# 13-08-2026
+## AST v1: state, events, conditionals, loops + static quality-gate enforcement
+### pr
+https://github.com/justgu1/beaconray/pull/2
+### done
+Extended `.specs/ast-component-spec.md` to v1 (additive, v0 stays valid): `state`, event attributes (`{ on: expr }`), conditional nodes (`{ show: {...} }`), loop nodes (`{ for: {...} }`) — all mapped 1:1 to Mitosis 0.14.0's internal conventions, verified by manual testing (`state` shape comes from `useStore`, not `useState`; events use `bindingType: 'function'`; conditionals/loops use the built-in `Show`/`For` node names). Updated `.specs/mitosis-compiler-spec.md` with the mapping rules and a new "Quality-gate validation" section. Logged ADR-006.
+
+Updated `/compiler`: `types.ts` (new `StateVar`/`ShowNode`/`ForNode` types, `isNativeInteractiveTag` guard), `ast-to-mitosis.ts` (state/event/show/for mapping), `validate.ts` (now enforces the statically-checkable quality-gate rules from `component-quality-spec.md` — event binding needs a native interactive tag or explicit `role`, interactive elements need an accessible name, `img` needs `alt`, no positive `tabindex` — a violation aborts compilation with a clean message, verified against a deliberately bad fixture). `compile.ts` now catches parse/validation errors cleanly instead of dumping a raw stack trace.
+
+New fixture `compiler/examples/counter.ast.json` exercises all 4 new AST v1 features at once. Verified end-to-end: all 4 outputs (`.lite.tsx`/react/vue/astro) generated correctly — React uses `useState`, Vue uses `v-if`/`v-for`, Astro's `componentToHtml` handles `Show`/`For` without breaking. Re-ran the existing `Button` fixture (v0) to confirm no regression. `tsc --noEmit` on generated React output passes (same expected `react`-module-not-found noise, no syntax errors).
