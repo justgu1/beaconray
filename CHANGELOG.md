@@ -51,7 +51,7 @@ Noted for later, not built this round: structured data (schema.org JSON-LD, `Wor
 # 13-08-2026
 ## Beaconray Theme: Royal Cyan palette, Atkinson Hyperlegible, CSS-agnostic tokens, mandatory responsiveness
 ### pr
-TBD (no PR yet — local work)
+https://github.com/justgu1/beaconray/pull/4
 ### done
 Rejected a Tailwind-`@theme`-based token mechanism (previous draft direction) in favor of a fully CSS-agnostic one — plain CSS custom properties, zero framework coupling in the core. Logged ADR-010: new `.specs/theme-spec.md` defines the **Beaconray Theme**, the platform's default token catalog — color, typography, spacing/sizing, animation, focus-visibility, and mandatory responsiveness, explicitly as a generic mechanism ("anything CSS-related becomes a token"), not a closed 4-category list.
 
