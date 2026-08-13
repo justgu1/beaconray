@@ -7,6 +7,7 @@ export interface ComponentProp {
   type: PropType;
   required?: boolean;
   enum?: string[];
+  example?: string | number | boolean;
 }
 
 export interface StateVar {

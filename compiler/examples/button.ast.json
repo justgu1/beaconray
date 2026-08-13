@@ -1,9 +1,9 @@
 {
   "name": "Button",
   "props": [
-    { "name": "label", "type": "string", "required": true },
-    { "name": "disabled", "type": "boolean", "required": false },
-    { "name": "variant", "type": "string", "enum": ["primary", "secondary"], "required": false }
+    { "name": "label", "type": "string", "required": true, "example": "Click me" },
+    { "name": "disabled", "type": "boolean", "required": false, "example": false },
+    { "name": "variant", "type": "string", "enum": ["primary", "secondary"], "required": false, "example": "primary" }
   ],
   "root": {
     "tag": "button",

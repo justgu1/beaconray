@@ -54,7 +54,7 @@ Format of the AST describing a visual component, framework-agnostic. Consumed by
 ## Rules
 
 - `name`: PascalCase, component name.
-- `props`: list of `{ name, type, required, enum? }`. `type` is `string | boolean | number`.
+- `props`: list of `{ name, type, required, enum?, example? }`. `type` is `string | boolean | number`. `example` (v1.1) is a realistic literal value matching `type`, used to pre-render genuinely static markup (real text, not a placeholder) for the SEO/GEO-focused compiler outputs — see `mitosis-compiler-spec.md`. Absent `example` falls back to an empty/zero/false value for that type, which produces technically-valid but content-empty static output — fine for a pipeline smoke test, not for a real component meant to be crawled.
 - `state?`: list of `{ name, type, initial }` — local component state. `initial` is a literal (`string | boolean | number`) matching the declared type. Absent = stateless component (v0).
 - `root`: a single element node (recursive). Element node: `{ tag, attributes?, children? }`.
 - `attributes`: map `name → value`. Value is one of:
@@ -71,3 +71,4 @@ Format of the AST describing a visual component, framework-agnostic. Consumed by
 ## Non-goals (v1)
 - Doesn't model slots, context, hooks, forms with validation — out of scope.
 - Focus management around `show`/`for` (what receives focus when a block appears/disappears, what happens when a focused list item is removed) is an open item — not solved in this version, not pretended to be.
+- **Known gap: `PropType` doesn't model lists.** A prop bound as a `for`'s `each` (like `Counter`'s `items`) is actually a list at runtime, but `type` only allows `string | boolean | number` — there's no `"array"` type yet. Its declared `type` is a scalar placeholder, and its `example` (when the prop is used this way) has to be a real array despite `type: "string"` saying otherwise — JSON doesn't enforce it, but it's a real inconsistency, not a clean design. Fix is adding a proper list/array `PropType` — tracked, not done here.

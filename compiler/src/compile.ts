@@ -1,16 +1,35 @@
 // Entry point for the prototype pipeline — see .specs/mitosis-compiler-spec.md
 import * as fs from "fs";
 import * as path from "path";
-import { componentToMitosis, componentToReact, componentToVue, componentToHtml } from "@builder.io/mitosis";
+import { componentToMitosis, componentToReact, componentToVue } from "@builder.io/mitosis";
 import { astToMitosisComponent } from "./ast-to-mitosis";
+import { buildExampleProps, renderStaticHtml } from "./render-static";
 import { validateAst } from "./validate";
 import { ComponentAst } from "./types";
 
 function wrapAstro(html: string): string {
   // Mitosis 0.14.0 has no native "astro" target (see mitosis-compiler-spec.md,
-  // step 6). This wraps the plain HTML/JS output from componentToHtml in a
-  // minimal Astro component shell as a documented workaround.
+  // step 6/7). This wraps the genuinely static, baked-text HTML from
+  // render-static.ts in a minimal Astro component shell.
   return `---\n---\n${html}`;
+}
+
+function wrapQaHtml(name: string, html: string): string {
+  // Standalone document for QA-001 (Playwright + axe-core, see
+  // .specs/qa-automation-spec.md). `lang` and `title` are required here —
+  // axe-core flags their absence at the document level, which is noise
+  // unrelated to the component being tested.
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>${name}</title>
+  </head>
+  <body>
+    ${html}
+  </body>
+</html>
+`;
 }
 
 function writeFile(outDir: string, relPath: string, content: string) {
@@ -40,6 +59,7 @@ function main() {
 
   const component = astToMitosisComponent(ast);
   const outDir = path.join(__dirname, "..", "out", ast.name);
+  const exampleProps = buildExampleProps(ast);
 
   const targets: Array<{ label: string; run: () => { relPath: string; content: string } }> = [
     {
@@ -67,7 +87,14 @@ function main() {
       label: "astro",
       run: () => ({
         relPath: path.join("astro", `${ast.name}.astro`),
-        content: wrapAstro(componentToHtml()({ component })),
+        content: wrapAstro(renderStaticHtml(component, exampleProps)),
+      }),
+    },
+    {
+      label: "qa-html",
+      run: () => ({
+        relPath: path.join("qa", `${ast.name}.html`),
+        content: wrapQaHtml(ast.name, renderStaticHtml(component, exampleProps)),
       }),
     },
   ];

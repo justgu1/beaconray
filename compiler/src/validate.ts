@@ -65,6 +65,12 @@ function validateQualityGate(node: AstNode, componentName: string, path: string 
       throw new Error(`[${componentName}] ${path}: <img> is missing 'alt' (component-quality-spec.md, rule 2)`);
     }
 
+    if (node.tag === "a" && attrs.href === undefined) {
+      throw new Error(
+        `[${componentName}] ${path}: <a> is missing 'href' — a link with no href doesn't exist to any crawler (component-quality-spec.md, rule 6)`
+      );
+    }
+
     if (typeof attrs.tabindex === "number" && attrs.tabindex > 0) {
       throw new Error(
         `[${componentName}] ${path}: <${node.tag}> has a positive 'tabindex' (${attrs.tabindex}) (component-quality-spec.md, rule 2)`
