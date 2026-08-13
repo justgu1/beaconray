@@ -1,25 +1,27 @@
-# AGENTS
-
-load:
-- .specs/INDEX.md
-- .specs/CONTEXT.md
-
-workflow:
-- load-spec
-- load-dependencies
-- load-contracts
-- load-rules
-- load-checklists
-- load-skills
-
+role: harness guide — mandatory for any agent/AI acting in this repo
+caveman: full
+load_before_any_task:
+  - .specs/SPECS.md
+  - .specs/SKILLS.md
+  - .specs/ADRS.md
 rules:
-- respect-dependencies
-- do-not-implement-draft-work-items
-- validate-checklists
-- keep-specs-synchronized
-- keep-docs-synchronized
-- update-changelog
-- specs-are-source-of-truth
-
-precedence:
-contracts > rules > spec > code > docs
+  - specs_are_source_of_truth
+  - no_code_without_matching_spec
+  - new_decision_becomes_adr
+  - update_changelog_every_session
+  - keep_specs_synchronized_with_code
+specs:
+  index: .specs/SPECS.md
+  skills_index: .specs/SKILLS.md
+  adrs: .specs/ADRS.md
+  skills_dir: .specs/skills/
+  spec_naming: ".specs/{feature}-{module}-spec.md"
+changelog:
+  path: CHANGELOG.md
+  format: |
+    # DD-MM-YYYY
+    ## <session title>
+    ### pr
+    <pr link>
+    ### done
+    <summary: tech used, adr count, files touched>

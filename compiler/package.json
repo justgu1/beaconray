@@ -1,0 +1,19 @@
+{
+  "name": "@beaconray/compiler",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Component AST -> Mitosis .lite.tsx -> react/vue/astro pipeline (prototype, see .specs/mitosis-compiler-spec.md)",
+  "type": "commonjs",
+  "main": "dist/compile.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "compile": "node dist/compile.js"
+  },
+  "dependencies": {
+    "@builder.io/mitosis": "0.14.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "@types/node": "^20.14.0"
+  }
+}
