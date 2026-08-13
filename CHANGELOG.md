@@ -25,7 +25,7 @@ New fixture `compiler/examples/counter.ast.json` exercises all 4 new AST v1 feat
 # 13-08-2026
 ## QA-001: Playwright + axe-core WCAG 2.1 AA audit
 ### pr
-TBD (no PR yet — local work)
+https://github.com/justgu1/beaconray/pull/3
 ### done
 Added `.specs/qa-automation-spec.md` (QA-001, layer 1 of `component-qa-strategy-spec.md`) and logged ADR-007: QA-001 tests the compiler's framework-agnostic HTML output (`componentToHtml`), not React/Vue rendering — avoids needing a bundler/JSX runtime at test time, at the documented cost of not catching framework-specific rendering bugs.
 
@@ -38,7 +38,7 @@ Asked to guarantee all 24 AA-exclusive WCAG success criteria (2.1 + 2.2 combined
 # 13-08-2026
 ## SEO & GEO: genuinely static render, `<a href>` rule, future URL-audit direction noted
 ### pr
-TBD (no PR yet — local work)
+https://github.com/justgu1/beaconray/pull/3
 ### done
 Asked to make components "SEO perfect and GEO perfect." Found a real problem: the Astro/`qa-html` output (`componentToHtml`) renders empty `data-el` placeholders whose text gets filled by an injected `<script>` after load — invisible to crawlers that don't run JS (true of most search crawlers, and effectively all LLM/AI-answer-engine crawlers today). Logged ADR-009: switched both static targets to `componentToTemplate()` instead — confirmed by manual testing (including with `Show`/`For`/`state`) that it generates a plain JS function whose *source* renders real baked HTML when executed with example props.
 
