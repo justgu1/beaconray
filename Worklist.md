@@ -24,12 +24,14 @@ Este documento gerencia as tarefas técnicas de baixo nível necessárias para a
 | **QA-002** | Testes | Storybook (camada 2 da estratégia de QA): playground por componente, uma story por variante/estado de prop, addon de a11y (axe-core) e addon de interação (`@storybook/test`, Play function com teclado/clique real). | QA-001 | Média | ⏳ Pendente |
 | **QA-003** | Testes | Cypress (camada 3 da estratégia de QA): fluxo real de UI/UX em navegador de verdade, fecha a lacuna de interação que Playwright puro não cobre. | QA-002 | Alta | ⏳ Pendente |
 | **QA-004** | Testes | Auditoria via URL: generalizar `qa/src/run.ts` pra aceitar URL arbitrária (não só output local do compiler) — feature de plataforma, usuário aponta qualquer site/componente/app e recebe feedback de SEO/GEO/WCAG. | QA-001 | Alta | ⏳ Pendente (futuro, sem prazo — rastreado em `.specs/qa-automation-spec.md`) |
+| **THEME-001** | Qualidade | Beaconray Theme (`.specs/theme-spec.md`): paleta Royal Cyan + fonte Atkinson Hyperlegible, tokens genéricos de CSS (cor/tipografia/espaço/animação) via custom properties puras, foco visível (fecha WCAG 2.4.7), responsividade obrigatória (sem largura fixa em `px`). | QG-001 | Alta | ✅ Concluído (`compiler/theme/tokens.css` + enforcement em `validate.ts`; contraste real confirmado via axe-core — 6.57:1 medido, bate com o cálculo) |
+| **PLAT-001** | Plataforma | Marketplace público: publicar tema/componente (do repo próprio via CLI ou direto do Studio), tornar público, ranking social (estrelas, comentários, downloads) — estilo GitHub. | BK-001, BK-005, CLI-002, ST-002 | Alta | ⏳ Pendente (futuro, sem prazo) |
 
 ---
 
 ## 📈 Métricas de Progresso
-*   **Total de Tarefas:** 20
-*   **Concluídas:** 5 (HN-001, QG-002, CP-001, QA-001, SEO-001)
+*   **Total de Tarefas:** 22
+*   **Concluídas:** 6 (HN-001, QG-002, CP-001, QA-001, SEO-001, THEME-001)
 *   **Em andamento:** 2 (QG-001, CP-002)
-*   **Complexidade Crítica / Alta:** 11
-*   **Estimativa de Esforço Base:** 160h-220h de engenharia focada (não recalculado desde a adição de HN-001/QG-001/QG-002/QA-002/QA-003/SEO-001/SEO-002/QA-004 — revisar na próxima rodada de planejamento).
+*   **Complexidade Crítica / Alta:** 12
+*   **Estimativa de Esforço Base:** 160h-220h de engenharia focada (não recalculado desde a adição de HN-001/QG-001/QG-002/QA-002/QA-003/SEO-001/SEO-002/QA-004/THEME-001/PLAT-001 — revisar na próxima rodada de planejamento).
