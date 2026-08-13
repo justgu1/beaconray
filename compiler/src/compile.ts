@@ -18,12 +18,16 @@ function wrapQaHtml(name: string, html: string): string {
   // Standalone document for QA-001 (Playwright + axe-core, see
   // .specs/qa-automation-spec.md). `lang` and `title` are required here —
   // axe-core flags their absence at the document level, which is noise
-  // unrelated to the component being tested.
+  // unrelated to the component being tested. Links the Beaconray Theme
+  // tokens (.specs/theme-spec.md) so components using var(--br-*) in style
+  // actually resolve to real colors — otherwise axe's contrast checks would
+  // have nothing real to evaluate.
   return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>${name}</title>
+    <link rel="stylesheet" href="../../_theme/tokens.css" />
   </head>
   <body>
     ${html}
@@ -60,6 +64,13 @@ function main() {
   const component = astToMitosisComponent(ast);
   const outDir = path.join(__dirname, "..", "out", ast.name);
   const exampleProps = buildExampleProps(ast);
+
+  // Beaconray Theme tokens (.specs/theme-spec.md) — shared asset, copied
+  // once, not duplicated per component.
+  const themeSrc = path.join(__dirname, "..", "theme", "tokens.css");
+  const themeOut = path.join(__dirname, "..", "out", "_theme", "tokens.css");
+  fs.mkdirSync(path.dirname(themeOut), { recursive: true });
+  fs.copyFileSync(themeSrc, themeOut);
 
   const targets: Array<{ label: string; run: () => { relPath: string; content: string } }> = [
     {

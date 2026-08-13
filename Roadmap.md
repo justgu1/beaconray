@@ -13,7 +13,7 @@ Todo componente que sair do compiler precisa satisfazer (`.specs/component-quali
 *   **WCAG 2.2 AA** — nome acessível em todo elemento interativo, `alt` em imagem, sem `tabindex` positivo, rótulo em todo campo de formulário. Mapa completo dos 24 critérios exclusivos de AA (2.1+2.2) documentado — o que é responsabilidade do compiler vs. o que é responsabilidade do Studio/app (navegação do site, fluxos de formulário, mídia) fica explícito, não presumido.
 *   **Acesso multi-modal obrigatório** — operável por teclado, endereçável por controle de voz e leitor de tela; nada depende só de mouse/toque.
 *   **Performance / ultra leve** — orçamento de bundle por componente, zero dependência de runtime além do framework alvo.
-*   **Animação configurável via tokens** — nunca hardcodar duração/easing, sempre referenciar tema central (estilo Tailwind `@theme`); respeita `prefers-reduced-motion`.
+*   **Beaconray Theme — tokens via CSS puro** — nunca hardcodar cor/fonte/espaço/duração/easing; sempre `var(--br-*)`, custom properties puras, zero dependência de Tailwind ou qualquer lib CSS no núcleo (`.specs/theme-spec.md`). Paleta Royal Cyan + fonte Atkinson Hyperlegible, contraste verificado matematicamente (não assumido). Responsividade 100% obrigatória por padrão. Respeita `prefers-reduced-motion`.
 *   **SEO & GEO** — output estático (Astro/`qa-html`) renderiza texto de verdade já embutido no HTML (via `componentToTemplate` + valores de exemplo), não injetado por JS depois do load; todo `<a>` com `href` real. Sem isso, crawler de busca e de LLM não veem conteúdo nenhum.
 
 Verificação em 3 camadas (`.specs/component-qa-strategy-spec.md`, documentado, implementação entra conforme o sistema cresce): **Playwright + axe-core** (auditoria WCAG automatizada, já rodando local contra `Button`/`Counter`) → **Storybook** (playground por componente, addon de a11y/interação) → **Cypress** (fluxo real de UI/UX em navegador de verdade).
@@ -33,7 +33,7 @@ Verificação em 3 camadas (`.specs/component-qa-strategy-spec.md`, documentado,
 **Foco:** Construir a interface visual de alta fidelidade que produza o **mesmo formato de AST** que o compiler da Fase 1 já consome — sem atalho específico de Studio no formato.
 
 *   **Setembro/2026 — Construtor de Layouts (Elementor-like):** Canvas interativo em React com Isolamento de Iframe (Sandbox), `@dnd-kit/core` com drag-and-drop acionado por teclado, atualizando a árvore de acessibilidade (AOM) em tempo real.
-*   **Outubro/2026 — Painel de Controle Atômico (Figma-like):** editor de propriedades mapeando WAI-ARIA states (`aria-expanded`, `aria-controls`, `aria-live`) direto pro AST; motor de resolução de classes Tailwind v4.0 `@theme` alimentando os tokens de animação/tema definidos na Fase 1.
+*   **Outubro/2026 — Painel de Controle Atômico (Figma-like):** editor de propriedades mapeando WAI-ARIA states (`aria-expanded`, `aria-controls`, `aria-live`) direto pro AST; editor visual do Beaconray Theme (`.specs/theme-spec.md`) consumindo os tokens CSS puros definidos na Fase 1 — sem depender de Tailwind (decisão que substitui a menção anterior a "Tailwind v4.0 `@theme`" nesta linha; Studio pode oferecer Tailwind como opção de autoria por cima, não como núcleo).
 
 ## ⚙️ Fase 3: Kernel do Sistema & Infraestrutura de Distribuição (Q1 2027)
 **Foco:** Backend, armazenamento e protocolo CLI — entra depois de já existir compiler + Studio produzindo componentes reais.
@@ -46,3 +46,4 @@ Verificação em 3 camadas (`.specs/component-qa-strategy-spec.md`, documentado,
 
 *   **Janeiro/2027 — Registro Escopado Privado:** suporte a múltiplos escopos NPM (`@beaconray/username-component`), silos fechados de componentes por empresa/time na mesma base Symfony.
 *   **Fevereiro/2027 — Telemetria e Analytics de Interface:** coletores de log no Symfony pra rastrear downloads de pacotes da CLI, relatórios de volumetria e uso de banda por usuário.
+*   **Março/2027 — Marketplace Público de Temas & Componentes:** publicação pública de temas/componentes (via CLI a partir do repo do usuário, ou direto do Studio), ranking social (estrelas, comentários, downloads) estilo GitHub — estende o registro escopado privado acima com uma camada pública (`Worklist.md` `PLAT-001`).

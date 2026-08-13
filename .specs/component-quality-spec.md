@@ -33,7 +33,7 @@ Mandatory quality bar for every component that comes out of the compiler (`.spec
 | 1.4.13 | Content on Hover or Focus | interaction (tooltip/popover) | needs a real tooltip component to test against | Tracked — no such component yet |
 | 2.4.5 | Multiple Ways | site navigation | app-level, not component-level | Out of scope for the compiler |
 | 2.4.6 | Headings and Labels | component | our accessible-name rule guarantees non-empty; *meaningful* text isn't code-checkable | Partial — non-empty enforced, quality of wording isn't |
-| 2.4.7 | Focus Visible | component CSS (`outline`) | AST doesn't model CSS/`outline` yet | Tracked — add when style tokens land |
+| 2.4.7 | Focus Visible | component CSS (`outline`) | global `:focus-visible` rule in `theme-spec.md`'s token file, using a verified-contrast `--br-color-focus-ring` token | **Implemented this round** |
 | 2.4.11 | Focus Not Obscured (Minimum) | layout with overlays (modal/dropdown) | needs a real overlay component to test against | Tracked — no such component yet |
 | 2.5.7 | Dragging Movements | drag-based component | only applies once a drag component exists | N/A today, add the AST rule when one is built |
 | 2.5.8 | Target Size (Minimum) | component, real rendered size | axe-core 4.13's `target-size` rule (tag `wcag22aa`) | **Included this round** in the QA runner; only bites with real size CSS |
@@ -58,10 +58,11 @@ Mandatory quality bar for every component that comes out of the compiler (`.spec
 - Zero runtime dependency beyond the target framework itself — no extra library pulled in by a component.
 - No unnecessary wrapper element — already confirmed the current compiler doesn't leak Mitosis's internal text-node convention (`name: 'div'` placeholder) into the generated output.
 
-### 5. Animation via tokens
-- A component never hardcodes a duration or easing value.
-- It references a central token instead (e.g. `--duration-fast`, `--easing-standard`), the same way Tailwind's `@theme` centralizes design tokens.
-- Full token system design is tracked as a TODO in `.specs/animation-theme-spec.md` (not written yet, next round) — only the "no magic value" rule is in force today.
+### 5. Theming via tokens (generic — color, typography, spacing, animation, and any future CSS concern)
+- A component never hardcodes a CSS value that should be customizable — color, font, size, spacing, radius, duration, easing, or anything else CSS-related. The categories listed are the Beaconray Theme's initial catalog, not a closed list.
+- It references a central token instead (e.g. `--br-color-primary`, `--br-duration-fast`), via plain CSS custom properties — no CSS framework/lib dependency in the core (`[[beaconray-css-agnostic]]`).
+- Full token catalog — Beaconray Theme (Royal Cyan palette, Atkinson Hyperlegible typeface, spacing/sizing, animation, focus-visibility) — defined in `.specs/theme-spec.md`. **Implemented this round.**
+- Static enforcement in `validate.ts`: raw color, raw time value, and fixed-pixel width/height in a `style` attribute are all rejected. Font-size/spacing enforcement is not implemented (documented gap — needs a real CSS parser to avoid false positives, not a regex).
 
 ### 6. SEO & GEO (Search + Generative Engine Optimization)
 SEO (search crawlers) and GEO (LLM/AI-answer-engine crawlers — Perplexity, ChatGPT browsing, Google AI Overviews) share the same root requirement: **real content has to be present in the markup itself**, not injected by client-side JavaScript after load. Most search crawlers and effectively all LLM crawlers don't execute JS — a component whose text only appears via a `<script>` hydration step is invisible to both.
@@ -74,6 +75,13 @@ SEO (search crawlers) and GEO (LLM/AI-answer-engine crawlers — Perplexity, Cha
 
 ### 7. Note on interactivity trade-off
 The static-rendered output (Astro, `qa-html`) has **no client-side interactivity** by design — a `Counter`'s button renders with its initial state baked in, but clicking it does nothing in that output, because there's no hydration script attached. This is intentional for a genuinely static, crawlable render; real interactivity for Astro would come from Astro's own island/hydration directives wrapping a React/Vue output later, not from Mitosis's own client-hydration script. Not a silent gap — the React/Vue targets remain the fully-interactive ones.
+
+### 8. Responsiveness — mandatory, not opt-in
+Every component is mobile-first by default:
+- No fixed `px` width/height in a component's `style` — relative units only. **Enforced in code** — `validate.ts` rejects a fixed-pixel `width`/`height` in `style`.
+- Default `overflow-wrap: break-word` on text-bearing nodes, so a long string/URL never breaks a narrow container.
+- 24×24px minimum touch target (SC 2.5.8, rule 2) reinforced here as a responsiveness concern too, not only isolated a11y.
+- Reflow at 320px (SC 1.4.10) is exactly what QA-001's reflow check (`qa/src/run.ts`) verifies — that check exists because of this rule, not by coincidence.
 
 ## Non-goals (this version)
 - No automated enforcement yet for most rules — see `.specs/component-qa-strategy-spec.md` and `.specs/skills/component-quality-checklist.md` for how this gets checked, today manually via the checklist (rules 1–2's AST-level subset and the SEO `href`/static-render rules are the exception — enforced in code, see `mitosis-compiler-spec.md`/`validate.ts`).

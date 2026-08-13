@@ -77,6 +77,10 @@ function validateQualityGate(node: AstNode, componentName: string, path: string 
       );
     }
 
+    if (typeof attrs.style === "string") {
+      validateThemeTokens(attrs.style, componentName, path, node.tag);
+    }
+
     (node.children ?? []).forEach((child, i) => validateQualityGate(child, componentName, `${path}>${node.tag}[${i}]`));
     return;
   }
@@ -87,6 +91,37 @@ function validateQualityGate(node: AstNode, componentName: string, path: string 
   }
 
   // text node: nothing to check
+}
+
+// Theming/responsiveness enforcement (component-quality-spec.md rules 5 & 8,
+// see .specs/theme-spec.md) — checks the *literal* `style` string only; a
+// style built from a bind expression isn't reachable here (documented gap,
+// falls back to the manual checklist).
+const VAR_CALL_RE = /var\([^)]*\)/g;
+const RAW_COLOR_RE = /#[0-9a-fA-F]{3,8}\b|\brgba?\(/;
+const RAW_TIME_RE = /\b\d+(\.\d+)?m?s\b/;
+// Negative lookbehind avoids matching "width" inside "border-width" while
+// still matching "max-width"/"min-width" as whole property names.
+const FIXED_PX_SIZE_RE = /(?<![a-zA-Z-])(width|height|max-width|max-height|min-width|min-height)\s*:\s*\d+(\.\d+)?px\b/;
+
+function validateThemeTokens(style: string, componentName: string, path: string, tag: string) {
+  const withoutVarCalls = style.replace(VAR_CALL_RE, "");
+
+  if (RAW_COLOR_RE.test(withoutVarCalls)) {
+    throw new Error(
+      `[${componentName}] ${path}: <${tag}> style has a raw color value outside var(...) — use a --br-color-* token instead (component-quality-spec.md, rule 5)`
+    );
+  }
+  if (RAW_TIME_RE.test(withoutVarCalls)) {
+    throw new Error(
+      `[${componentName}] ${path}: <${tag}> style has a raw time value outside var(...) — use a --br-duration-* token instead (component-quality-spec.md, rule 5)`
+    );
+  }
+  if (FIXED_PX_SIZE_RE.test(style)) {
+    throw new Error(
+      `[${componentName}] ${path}: <${tag}> style has a fixed pixel width/height — use relative units instead (component-quality-spec.md, rule 8)`
+    );
+  }
 }
 
 function hasVisibleText(children: AstNode[]): boolean {

@@ -1,0 +1,93 @@
+/*
+ * Beaconray Theme — default token catalog. See .specs/theme-spec.md.
+ * Plain CSS custom properties, zero framework/build-step dependency —
+ * override any --br-* variable in a consuming project to customize.
+ */
+
+:root {
+  /* Color — Royal Cyan palette (contrast verified, see theme-spec.md) */
+  --br-color-primary: #056583;
+  --br-color-secondary: #37849c;
+  --br-color-border: #37849c;
+  --br-color-surface: #ffffff;
+  --br-color-surface-accent: #cde0e6;
+  --br-color-text: #056583;
+  --br-color-on-primary: #ffffff; /* text placed on top of --br-color-primary — 6.57:1 verified */
+  --br-color-focus-ring: #056583;
+  --br-color-success: #166534;
+  --br-color-danger: #b91c1c;
+
+  /* Typography — Atkinson Hyperlegible */
+  --br-font-family-base: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --br-font-size-xs: 0.75rem;
+  --br-font-size-sm: 0.875rem;
+  --br-font-size-base: 1rem;
+  --br-font-size-lg: 1.125rem;
+  --br-font-size-xl: 1.5rem;
+  --br-font-weight-normal: 400;
+  --br-font-weight-medium: 500;
+  --br-font-weight-bold: 700;
+  --br-line-height-base: 1.5;
+
+  /* Spacing & sizing */
+  --br-space-1: 4px;
+  --br-space-2: 8px;
+  --br-space-3: 12px;
+  --br-space-4: 16px;
+  --br-space-6: 24px;
+  --br-space-8: 32px;
+  --br-radius-sm: 4px;
+  --br-radius-base: 8px;
+  --br-radius-lg: 16px;
+  --br-radius-full: 9999px;
+
+  /* Animation */
+  --br-duration-fast: 150ms;
+  --br-duration-base: 250ms;
+  --br-duration-slow: 400ms;
+  --br-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --br-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --br-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --br-ease-linear: linear;
+}
+
+/* Dark mode — same token names, verified-contrast dark-mode values.
+   #056583 alone is too weak against a near-black surface (3.01:1), so a
+   lighter Royal Cyan step is promoted to primary here instead. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --br-color-surface: #0a0a0a;
+    --br-color-surface-accent: #14212633; /* subtle tint over dark surface */
+    --br-color-text: #cde0e6;
+    --br-color-primary: #69a3b5;
+    --br-color-secondary: #9bc1cd;
+    --br-color-border: #9bc1cd;
+    --br-color-on-primary: #0a0a0a; /* dark-mode primary is lighter — needs dark text, 7.08:1 verified */
+    --br-color-focus-ring: #69a3b5;
+  }
+}
+
+/* Focus visibility — closes WCAG SC 2.4.7. Global, applies to every
+   focusable element automatically, no per-component work needed. */
+:focus-visible {
+  outline: 2px solid var(--br-color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Respect the user's reduced-motion preference — zero animation/transition
+   duration, applies automatically to anything using the duration tokens. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Responsiveness baseline — long strings/URLs never break a narrow
+   container (see theme-spec.md rule 6 / component-quality-spec.md rule 8). */
+* {
+  overflow-wrap: break-word;
+}

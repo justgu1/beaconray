@@ -10,7 +10,8 @@
     "attributes": {
       "aria-label": { "bind": "props.label" },
       "disabled": { "bind": "props.disabled" },
-      "class": { "bind": "props.variant === \"primary\" ? \"btn btn-primary\" : \"btn btn-secondary\"" }
+      "class": { "bind": "props.variant === \"primary\" ? \"btn btn-primary\" : \"btn btn-secondary\"" },
+      "style": "background-color: var(--br-color-primary); color: var(--br-color-on-primary); padding: var(--br-space-2) var(--br-space-4); border-radius: var(--br-radius-base); max-width: 100%; transition: background-color var(--br-duration-fast) var(--br-ease-standard);"
     },
     "children": [
       { "text": { "bind": "props.label" } }

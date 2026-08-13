@@ -31,6 +31,23 @@ export function buildExampleProps(ast: ComponentAst): Record<string, unknown> {
   return props;
 }
 
+// componentToTemplate serializes a `false` boolean attribute literally
+// (disabled={false} -> disabled="false"), which per HTML boolean-attribute
+// semantics is still truthy — the browser treats the element as disabled
+// regardless of the string value. Confirmed this isn't just cosmetic: a
+// disabled element is excluded from axe-core's color-contrast rule
+// entirely, silently defeating the theme-token contrast verification this
+// static render exists to support. Fixed here rather than left as a
+// documented-only gap (see mitosis-compiler-spec.md), since it was actively
+// masking a real check.
+const BOOLEAN_ATTRIBUTES = ["disabled", "checked", "selected", "readonly", "required", "multiple", "hidden"];
+const FALSE_BOOLEAN_ATTR_RE = new RegExp(`\\s(?:${BOOLEAN_ATTRIBUTES.join("|")})="false"`, "g");
+const TRUE_BOOLEAN_ATTR_RE = new RegExp(`(\\s(?:${BOOLEAN_ATTRIBUTES.join("|")}))="true"`, "g");
+
+function fixBooleanAttributes(html: string): string {
+  return html.replace(FALSE_BOOLEAN_ATTR_RE, "").replace(TRUE_BOOLEAN_ATTR_RE, "$1");
+}
+
 export function renderStaticHtml(component: MitosisComponent, exampleProps: Record<string, unknown>): string {
   const templateSrc = componentToTemplate()({ component });
   if (!templateSrc.includes(EXPORT_DEFAULT_PREFIX)) {
@@ -47,7 +64,7 @@ export function renderStaticHtml(component: MitosisComponent, exampleProps: Reco
     // Fresh require every time — nothing should ever be cached across calls.
     delete require.cache[require.resolve(tmpFile)];
     const templateFn = require(tmpFile) as (props: Record<string, unknown>) => string;
-    return templateFn(exampleProps);
+    return fixBooleanAttributes(templateFn(exampleProps));
   } finally {
     fs.unlinkSync(tmpFile);
   }
