@@ -1,0 +1,41 @@
+{
+  "name": "Counter",
+  "props": [
+    { "name": "items", "type": "string", "required": false }
+  ],
+  "state": [
+    { "name": "count", "type": "number", "initial": 0 }
+  ],
+  "root": {
+    "tag": "div",
+    "children": [
+      {
+        "show": { "bind": "props.items && props.items.length > 0" },
+        "children": [
+          { "tag": "h2", "children": [{ "text": "Items" }] }
+        ]
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "aria-label": "Increment",
+          "onClick": { "on": "state.count = state.count + 1" }
+        },
+        "children": [
+          { "text": { "bind": "state.count" } }
+        ]
+      },
+      {
+        "tag": "ul",
+        "children": [
+          {
+            "for": { "each": "props.items", "as": "item" },
+            "children": [
+              { "tag": "li", "children": [{ "text": { "bind": "item" } }] }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

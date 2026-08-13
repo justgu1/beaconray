@@ -28,8 +28,14 @@ function main() {
   }
 
   const raw = fs.readFileSync(inputPath, "utf8");
-  const parsed = JSON.parse(raw);
-  validateAst(parsed);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+    validateAst(parsed);
+  } catch (err) {
+    console.error(`[abort] ${(err as Error).message}`);
+    process.exit(1);
+  }
   const ast = parsed as ComponentAst;
 
   const component = astToMitosisComponent(ast);
