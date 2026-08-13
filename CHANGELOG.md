@@ -14,7 +14,7 @@ Added the mandatory component quality gate: `.specs/component-quality-spec.md` (
 # 13-08-2026
 ## AST v1: state, events, conditionals, loops + static quality-gate enforcement
 ### pr
-TBD (no PR yet — local work)
+https://github.com/justgu1/beaconray/pull/2
 ### done
 Extended `.specs/ast-component-spec.md` to v1 (additive, v0 stays valid): `state`, event attributes (`{ on: expr }`), conditional nodes (`{ show: {...} }`), loop nodes (`{ for: {...} }`) — all mapped 1:1 to Mitosis 0.14.0's internal conventions, verified by manual testing (`state` shape comes from `useStore`, not `useState`; events use `bindingType: 'function'`; conditionals/loops use the built-in `Show`/`For` node names). Updated `.specs/mitosis-compiler-spec.md` with the mapping rules and a new "Quality-gate validation" section. Logged ADR-006.
 
