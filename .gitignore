@@ -1,0 +1,8 @@
+node_modules/
+dist/
+compiler/out/
+.env
+.env.*
+vendor/
+storage/
+bootstrap/cache/

@@ -1,0 +1,19 @@
+{
+  "name": "Button",
+  "props": [
+    { "name": "label", "type": "string", "required": true },
+    { "name": "disabled", "type": "boolean", "required": false },
+    { "name": "variant", "type": "string", "enum": ["primary", "secondary"], "required": false }
+  ],
+  "root": {
+    "tag": "button",
+    "attributes": {
+      "aria-label": { "bind": "props.label" },
+      "disabled": { "bind": "props.disabled" },
+      "class": { "bind": "props.variant === \"primary\" ? \"btn btn-primary\" : \"btn btn-secondary\"" }
+    },
+    "children": [
+      { "text": { "bind": "props.label" } }
+    ]
+  }
+}
