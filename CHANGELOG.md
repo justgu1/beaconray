@@ -1,7 +1,7 @@
 # 13-08-2026
 ## Spec-driven harness setup
 ### pr
-TBD (no PR yet — local work)
+https://github.com/justgu1/beaconray/pull/1
 ### done
 Installed the project's spec-driven harness: `AGENTS.md` (lean YAML), `.specs/SPECS.md`, `.specs/SKILLS.md`, `.specs/skills/`, `.specs/ADRS.md`. Logged 4 ADRs (spec-driven harness, Mitosis-first build order, backend swap Laravel→Symfony, hand-authored pilot AST). Installed always-on caveman mode rules in `.cursor/rules/caveman.mdc`, `.windsurf/rules/caveman.md`, `.clinerules/caveman.md`, `.github/copilot-instructions.md`.
 
