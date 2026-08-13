@@ -1,7 +1,7 @@
 {
   "name": "Counter",
   "props": [
-    { "name": "items", "type": "string", "required": false }
+    { "name": "items", "type": "string", "required": false, "example": ["Apple", "Banana"] }
   ],
   "state": [
     { "name": "count", "type": "number", "initial": 0 }

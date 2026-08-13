@@ -1,0 +1,20 @@
+{
+  "name": "@beaconray/qa",
+  "version": "0.0.1",
+  "private": true,
+  "description": "QA-001: Playwright + axe-core WCAG 2.1 AA audit against the compiler's qa-html output (see .specs/qa-automation-spec.md)",
+  "type": "commonjs",
+  "main": "dist/run.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "qa": "node dist/run.js"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "playwright": "1.62.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "@types/node": "^20.14.0"
+  }
+}

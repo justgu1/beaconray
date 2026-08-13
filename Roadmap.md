@@ -10,19 +10,22 @@ Ordem de construção: **Mitosis/Componentes primeiro**, backend depois (ADR-002
 
 Todo componente que sair do compiler precisa satisfazer (`.specs/component-quality-spec.md`):
 *   **HTML5 semântico** — tag corresponde ao papel real, nunca `div`/`span` com evento sem `role` explícito.
-*   **WCAG 2.1 AA** — nome acessível em todo elemento interativo, `alt` em imagem, sem `tabindex` positivo, rótulo em todo campo de formulário.
+*   **WCAG 2.2 AA** — nome acessível em todo elemento interativo, `alt` em imagem, sem `tabindex` positivo, rótulo em todo campo de formulário. Mapa completo dos 24 critérios exclusivos de AA (2.1+2.2) documentado — o que é responsabilidade do compiler vs. o que é responsabilidade do Studio/app (navegação do site, fluxos de formulário, mídia) fica explícito, não presumido.
 *   **Acesso multi-modal obrigatório** — operável por teclado, endereçável por controle de voz e leitor de tela; nada depende só de mouse/toque.
 *   **Performance / ultra leve** — orçamento de bundle por componente, zero dependência de runtime além do framework alvo.
 *   **Animação configurável via tokens** — nunca hardcodar duração/easing, sempre referenciar tema central (estilo Tailwind `@theme`); respeita `prefers-reduced-motion`.
+*   **SEO & GEO** — output estático (Astro/`qa-html`) renderiza texto de verdade já embutido no HTML (via `componentToTemplate` + valores de exemplo), não injetado por JS depois do load; todo `<a>` com `href` real. Sem isso, crawler de busca e de LLM não veem conteúdo nenhum.
 
-Verificação em 3 camadas (`.specs/component-qa-strategy-spec.md`, documentado, implementação entra conforme o sistema cresce): **Playwright + axe-core** (auditoria WCAG automatizada) → **Storybook** (playground por componente, addon de a11y/interação) → **Cypress** (fluxo real de UI/UX em navegador de verdade).
+Verificação em 3 camadas (`.specs/component-qa-strategy-spec.md`, documentado, implementação entra conforme o sistema cresce): **Playwright + axe-core** (auditoria WCAG automatizada, já rodando local contra `Button`/`Counter`) → **Storybook** (playground por componente, addon de a11y/interação) → **Cypress** (fluxo real de UI/UX em navegador de verdade).
+
+**Direção futura (não construída ainda):** auditoria de SEO/GEO/WCAG como feature da plataforma — usuário aponta uma URL de qualquer site/componente/app (não só output do nosso compiler) e recebe o feedback pela plataforma. Hoje o QA-001 só audita o output local do compiler; generalizar pra URL arbitrária é rastreado em `.specs/qa-automation-spec.md`.
 
 ---
 
 ## 📍 Fase 1: Compiler & Componentes — Mitosis (Q3 2026)
 **Foco:** Sair de AST agnóstico de framework pra código nativo React/Vue/Astro, com o gate de qualidade acima valendo desde o primeiro componente.
 
-*   **Piloto já validado:** AST v0 (`.specs/ast-component-spec.md`, só props → atributos/texto) → `.lite.tsx`/react/vue/astro via `@builder.io/mitosis`, testado ponta a ponta com fixture `Button`. Astro sem gerador nativo na versão pinada — workaround documentado (`componentToHtml` envolto em shell de componente).
+*   **Piloto já validado:** AST v1 (`.specs/ast-component-spec.md` — props/atributos/texto + state/eventos/condicional/loop) → `.lite.tsx`/react/vue/astro via `@builder.io/mitosis`, testado ponta a ponta com fixtures `Button`/`Counter`. Astro sem gerador nativo na versão pinada — output estático via `componentToTemplate` (texto real embutido, sem gerador Astro nativo).
 *   **Julho/2026 — Parser JSON para Mitosis (AST v1):** expandir o AST pra state, eventos, condicionais (`Show`) e loops (`For`) — sai de "botão estático" pra componente real. Isolamento do processo de compilação em containers/workers temporários controlados por filas prioritárias no Redis quando o volume justificar.
 *   **Agosto/2026 — Multi-Framework Target consolidado:** geradores React/Vue/Astro estáveis pros 4 tipos de nó do AST v1, tarball (`.tar.gz`) segmentado por framework pronto pra distribuição futura via CLI/registry.
 
