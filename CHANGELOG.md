@@ -87,7 +87,7 @@ Combined as the next step after this round, not started now: cataloging the actu
 # 14-08-2026
 ## Component catalog v1 — 34 components, base-vs-complex is architectural not commercial
 ### pr
-TBD (no PR yet — local work)
+https://github.com/justgu1/beaconray/pull/6
 ### done
 Proposed 47 candidate components across 3 tiers (structural/interactive/complex); screened item-by-item against the user's own criterion — "does it have real behavior beyond what a dev would write in two minutes?" Logged ADR-012 with the final v1 list and wrote `.specs/component-catalog-spec.md`.
 
