@@ -10,7 +10,7 @@
     "tag": "div",
     "children": [
       {
-        "show": { "bind": "props.items && props.items.length > 0" },
+        "show": { "bind": "props.items && props.items.length > 0", "focusOnShow": true },
         "children": [
           { "tag": "h2", "children": [{ "text": "Items" }] }
         ]

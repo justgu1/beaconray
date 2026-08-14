@@ -1,5 +1,10 @@
 {
   "name": "Button",
+  "schema": {
+    "@context": "https://schema.org",
+    "@type": "Thing",
+    "name": "Button"
+  },
   "props": [
     { "name": "label", "type": "string", "required": true, "example": "Click me" },
     { "name": "disabled", "type": "boolean", "required": false, "example": false },

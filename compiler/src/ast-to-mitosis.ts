@@ -10,9 +10,25 @@ import {
   isBinding,
   isEventBinding,
   isForNode,
+  isNativeInteractiveTag,
   isShowNode,
   isTextNode,
 } from "./types";
+
+// Threaded through the recursive conversion so `show.focusOnShow` (v1.2,
+// see .specs/mitosis-compiler-spec.md) can register a ref + onUpdate hook
+// at the component level, not just the node level — Mitosis's refs/hooks
+// live on the top-level component object, not per-node.
+interface FocusContext {
+  refs: Record<string, any>;
+  onUpdate: any[];
+  counter: { n: number };
+}
+
+function nextRefName(ctx: FocusContext): string {
+  ctx.counter.n += 1;
+  return `showRef${ctx.counter.n}`;
+}
 
 function splitAttributes(attributes: Record<string, AttributeValue> | undefined) {
   const properties: Record<string, any> = {};
@@ -31,7 +47,7 @@ function splitAttributes(attributes: Record<string, AttributeValue> | undefined)
   return { properties, bindings };
 }
 
-function nodeToMitosis(node: AstNode): any {
+function nodeToMitosis(node: AstNode, ctx: FocusContext): any {
   if (isTextNode(node)) {
     const { text } = node;
     if (isBinding(text)) {
@@ -44,10 +60,38 @@ function nodeToMitosis(node: AstNode): any {
   }
 
   if (isShowNode(node)) {
+    const children = node.children.map((c) => nodeToMitosis(c, ctx));
+
+    if (node.show.focusOnShow) {
+      // Verified shape (.specs/mitosis-compiler-spec.md): a ref + an
+      // onUpdate hook with the show condition as its dependency compiles to
+      // useEffect(() => {...}, [deps]) in React and computed+watch in Vue —
+      // both re-fire on every transition, not just initial mount.
+      const refName = nextRefName(ctx);
+      ctx.refs[refName] = { argument: "null" };
+      ctx.onUpdate.push({
+        code: `if (${node.show.bind}) { ${refName}.focus(); }`,
+        deps: `[${node.show.bind}]`,
+        depsArray: [node.show.bind],
+      });
+
+      const first = children[0];
+      if (first) {
+        first.bindings = first.bindings ?? {};
+        if (!("ref" in first.bindings)) {
+          first.bindings.ref = { code: refName, bindingType: "expression", type: "single" };
+        }
+        const alreadyFocusable = isNativeInteractiveTag(first.name) || "tabIndex" in first.bindings;
+        if (!alreadyFocusable) {
+          first.bindings.tabIndex = { code: "-1", bindingType: "expression", type: "single" };
+        }
+      }
+    }
+
     return createMitosisNode({
       name: "Show",
       bindings: { when: { code: node.show.bind, bindingType: "expression", type: "single" } },
-      children: node.children.map(nodeToMitosis),
+      children,
     });
   }
 
@@ -56,7 +100,7 @@ function nodeToMitosis(node: AstNode): any {
       name: "For",
       scope: { forName: node.for.as },
       bindings: { each: { code: node.for.each, bindingType: "expression", type: "single" } },
-      children: node.children.map(nodeToMitosis),
+      children: node.children.map((c) => nodeToMitosis(c, ctx)),
     });
   }
 
@@ -67,7 +111,7 @@ function nodeToMitosis(node: AstNode): any {
     name: element.tag,
     properties,
     bindings,
-    children: (element.children ?? []).map(nodeToMitosis),
+    children: (element.children ?? []).map((c) => nodeToMitosis(c, ctx)),
   });
 }
 
@@ -80,18 +124,21 @@ export function astToMitosisComponent(ast: ComponentAst): MitosisComponent {
     state[s.name] = { code: JSON.stringify(s.initial), type: "property", propertyType: "normal" };
   }
 
+  const ctx: FocusContext = { refs: {}, onUpdate: [], counter: { n: 0 } };
+  const rootNode = nodeToMitosis(ast.root, ctx);
+
   return {
     "@type": "@builder.io/mitosis/component",
     imports: [],
     exports: {},
     inputs: ast.props.map((p) => ({ name: p.name, type: p.type, defaultValue: undefined })),
     meta: {},
-    refs: {},
+    refs: ctx.refs,
     state,
-    children: [nodeToMitosis(ast.root)],
+    children: [rootNode],
     context: { get: {}, set: {} },
     subComponents: [],
     name: ast.name,
-    hooks: { onMount: [], onEvent: [] },
+    hooks: { onMount: [], onEvent: [], onUpdate: ctx.onUpdate },
   };
 }
