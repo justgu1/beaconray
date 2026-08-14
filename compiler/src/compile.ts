@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { componentToMitosis, componentToReact, componentToVue } from "@builder.io/mitosis";
 import { astToMitosisComponent } from "./ast-to-mitosis";
+import { fixDynamicStyleForReact } from "./fix-react-dynamic-style";
 import { buildExampleProps, renderStaticHtml } from "./render-static";
 import { validateAst } from "./validate";
 import { ComponentAst } from "./types";
@@ -90,7 +91,7 @@ function main() {
       label: "react",
       run: () => ({
         relPath: path.join("react", `${ast.name}.tsx`),
-        content: componentToReact()({ component }),
+        content: fixDynamicStyleForReact(componentToReact()({ component })),
       }),
     },
     {
