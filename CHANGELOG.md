@@ -100,7 +100,7 @@ Mid-round correction: the user's first instinct was to make the base(Layer 1-2)-
 # 14-08-2026
 ## `/app` — backend Symfony (BK-001..005) + frontend Astro showcase + personal dev-infra
 ### pr
-
+https://github.com/justgu1/beaconray/pull/8
 ### done
 Backend work pulled forward from Fase 3 to now (ADR-015) — user decided to start the real product web app rather than wait for Studio. Started as a proposed DDD/hexagonal/modular architecture; user explicitly rejected that ("o DDD foi apenas uma sugestão") in favor of following idiomatic Symfony/API Platform community convention as closely as possible — flat `src/` folders by technical kind (`Entity/`, `Repository/`, `ApiResource/`, `State/Provider|Processor/`, `MessageHandler/`, `Validator/`, `Storage/`, `Security/Voter/`), no domain modules (ADR-017, corrected from an earlier draft). `Component` renamed to `Library` per user feedback; a proposed `Compilation` module was dropped entirely (folded into a single `MessageHandler`) and `Artifact` kept after explaining its actual purpose (compiled-output storage, distinct from the `Version` metadata row).
 
