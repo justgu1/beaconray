@@ -70,7 +70,7 @@ Also registered, not built, per a mid-round product idea: a future public market
 # 13-08-2026
 ## aria-live, focus-on-show, structured data (SEO-002) — closes QG-001
 ### pr
-TBD (no PR yet — local work)
+https://github.com/justgu1/beaconray/pull/5
 ### done
 Closed three items deferred across multiple rounds. Before committing to a focus-management approach, verified (manual testing, not assumed) that Mitosis's `hooks.onUpdate` with a `deps` array exists and compiles to `useEffect(() => {...}, [deps])` in React and a `computed`+`watch({ immediate: true })` pair in Vue — both re-fire on every dependency transition, not just initial mount (unlike plain `onMount`, which only fires once). Logged ADR-011.
 
