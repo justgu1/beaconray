@@ -1,0 +1,14 @@
+{
+  "name": "Separator",
+  "props": [
+    { "name": "spacing", "type": "string", "enum": ["sm", "base", "lg"], "required": false, "example": "base" }
+  ],
+  "root": {
+    "tag": "hr",
+    "attributes": {
+      "style": {
+        "bind": "\"border: none; border-top: 1px solid var(--br-color-border); margin: \" + (props.spacing === \"sm\" ? \"var(--br-space-2)\" : props.spacing === \"lg\" ? \"var(--br-space-8)\" : \"var(--br-space-4)\") + \" 0;\""
+      }
+    }
+  }
+}

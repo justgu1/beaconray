@@ -1,0 +1,98 @@
+{
+  "name": "Modal",
+  "props": [
+    { "name": "title", "type": "string", "required": false, "example": "Modal title" }
+  ],
+  "state": [
+    { "name": "open", "type": "boolean", "initial": false, "staticValue": true }
+  ],
+  "root": {
+    "tag": "div",
+    "children": [
+      {
+        "tag": "button",
+        "attributes": {
+          "aria-label": "Open modal",
+          "onClick": { "on": "state.open = true" },
+          "style": "background-color: var(--br-color-primary); color: var(--br-color-on-primary); padding: var(--br-space-2) var(--br-space-4); border-radius: var(--br-radius-base); max-width: 100%;"
+        },
+        "children": [{ "text": "Open modal" }]
+      },
+      {
+        "show": { "bind": "state.open", "focusOnShow": true },
+        "children": [
+          {
+            "tag": "div",
+            "attributes": {
+              "role": "button",
+              "aria-label": "Close modal",
+              "onClick": { "on": "state.open = false" },
+              "style": "position: fixed; inset: 0; z-index: 1000; background-color: var(--br-color-text); opacity: 0.5;"
+            },
+            "children": []
+          },
+          {
+            "tag": "div",
+            "attributes": {
+              "role": "dialog",
+              "aria-modal": "true",
+              "aria-labelledby": "modal-title",
+              "style": "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001; background-color: var(--br-color-surface); border-radius: var(--br-radius-base); padding: var(--br-space-4); max-width: 90%; max-height: 90%; overflow: auto; overflow-wrap: break-word;"
+            },
+            "children": [
+              {
+                "tag": "header",
+                "attributes": {
+                  "style": "display: flex; justify-content: space-between; gap: var(--br-space-4); margin-bottom: var(--br-space-4);"
+                },
+                "children": [
+                  {
+                    "tag": "h2",
+                    "attributes": {
+                      "id": "modal-title",
+                      "style": "margin: 0; color: var(--br-color-text); font-size: var(--br-font-size-lg);"
+                    },
+                    "children": [{ "text": { "bind": "props.title" } }]
+                  },
+                  {
+                    "tag": "button",
+                    "attributes": {
+                      "aria-label": "Close",
+                      "onClick": { "on": "state.open = false" },
+                      "style": "background-color: var(--br-color-primary); color: var(--br-color-on-primary); padding: var(--br-space-1) var(--br-space-2); border-radius: var(--br-radius-sm);"
+                    },
+                    "children": [{ "text": "×" }]
+                  }
+                ]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "style": "color: var(--br-color-text);"
+                },
+                "children": [{ "text": "Modal content." }]
+              },
+              {
+                "tag": "footer",
+                "attributes": {
+                  "style": "margin-top: var(--br-space-4);"
+                },
+                "children": [
+                  {
+                    "tag": "button",
+                    "attributes": {
+                      "aria-label": "Confirm",
+                      "onClick": { "on": "state.open = false" },
+                      "style": "background-color: var(--br-color-primary); color: var(--br-color-on-primary); padding: var(--br-space-2) var(--br-space-4); border-radius: var(--br-radius-base);"
+                    },
+                    "children": [{ "text": "Confirm" }]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

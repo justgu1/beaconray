@@ -7,6 +7,8 @@ Format of the AST describing a visual component, framework-agnostic. Consumed by
 
 **v1.2** (ADR-011): adds `show.focusOnShow` (move focus to the conditional block when it appears) and a top-level `schema` field (structured data). Both additive.
 
+**v1.3** (ADR-014): adds `state[].staticValue`, optional. The static/SEO render (`mitosis-compiler-spec.md` step 6) has no runtime — it bakes `state` from a literal value at generation time. Before v1.3 that value was always `initial`, so any component gating real content behind `state` (found building `Drawer`/`Modal`, `CMP-L1`) rendered that content invisible to crawlers/`axe-core` in the static output, regardless of what the interactive React/Vue targets correctly did with a real `initial`. `staticValue`, when present, is what the static targets bake instead; `initial` still governs React/Vue. Additive — absent `staticValue` falls back to `initial`, identical to pre-v1.3 behavior.
+
 ## Format
 
 ```json
@@ -57,7 +59,7 @@ Format of the AST describing a visual component, framework-agnostic. Consumed by
 
 - `name`: PascalCase, component name.
 - `props`: list of `{ name, type, required, enum?, example? }`. `type` is `string | boolean | number`. `example` (v1.1) is a realistic literal value matching `type`, used to pre-render genuinely static markup (real text, not a placeholder) for the SEO/GEO-focused compiler outputs — see `mitosis-compiler-spec.md`. Absent `example` falls back to an empty/zero/false value for that type, which produces technically-valid but content-empty static output — fine for a pipeline smoke test, not for a real component meant to be crawled.
-- `state?`: list of `{ name, type, initial }` — local component state. `initial` is a literal (`string | boolean | number`) matching the declared type. Absent = stateless component (v0).
+- `state?`: list of `{ name, type, initial, staticValue? }` — local component state. `initial` is a literal (`string | boolean | number`) matching the declared type, used by the interactive (React/Vue) targets. `staticValue?` (v1.3): the literal to bake into the static/SEO targets (Astro, `qa-html`) instead of `initial` — use when `initial` gates content that should still be crawlable/auditable (e.g. an overlay's `open`, `initial: false` at runtime but `staticValue: true` so the panel actually renders for SEO/GEO and QA-001). Absent = falls back to `initial`. Absent `state` entirely = stateless component (v0).
 - `schema?` (v1.2): a free-form JSON-LD object (schema.org structured data), must include `@context` and `@type` when present. Emitted as a `<script type="application/ld+json">` block in the static compiler output — see `mitosis-compiler-spec.md`.
 - `root`: a single element node (recursive). Element node: `{ tag, attributes?, children? }`.
 - `attributes`: map `name → value`. Value is one of:

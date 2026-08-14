@@ -10,3 +10,4 @@
 | .specs/qa-automation-spec.md | QA-001: Playwright+axe-core contra o output HTML do compiler |
 | .specs/theme-spec.md | Beaconray Theme: paleta Royal Cyan, fonte Atkinson Hyperlegible, tokens genéricos de CSS, responsividade obrigatória |
 | .specs/component-catalog-spec.md | Catálogo v1 (34 componentes, 3 camadas) + convenção de padrão por categoria |
+| .specs/component-layer1-structural-spec.md | Camada 1 (`CMP-L1`): props/AST shape de Card, Container, Separator, Drawer, Modal |
