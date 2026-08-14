@@ -2,7 +2,7 @@
 
 Este documento estabelece os marcos de engenharia estruturais e as metas arquiteturais de curto, médio e longo prazo do ecossistema Beaconray.
 
-Ordem de construção: **Mitosis/Componentes primeiro**, backend depois (ADR-002 em `.specs/ADRS.md`) — o resto do sistema é construído em torno dos componentes que o compiler produzir, não o contrário.
+Ordem de construção: **Mitosis/Componentes primeiro**, backend depois (ADR-002 em `.specs/ADRS.md`) — o resto do sistema é construído em torno dos componentes que o compiler produzir, não o contrário. **Correção (ADR-015):** o "depois" da Fase 3 foi puxado pra agora — o backend (`BK-001`..`BK-005`, `app/backend`) começou a ser construído em paralelo ao avanço da Camada 2/3 de componentes, não estritamente depois. CLI e Studio continuam depois.
 
 ---
 
@@ -36,11 +36,11 @@ Verificação em 3 camadas (`.specs/component-qa-strategy-spec.md`, documentado,
 *   **Setembro/2026 — Construtor de Layouts (Elementor-like):** Canvas interativo em React com Isolamento de Iframe (Sandbox), `@dnd-kit/core` com drag-and-drop acionado por teclado, atualizando a árvore de acessibilidade (AOM) em tempo real.
 *   **Outubro/2026 — Painel de Controle Atômico (Figma-like):** editor de propriedades mapeando WAI-ARIA states (`aria-expanded`, `aria-controls`, `aria-live`) direto pro AST; editor visual do Beaconray Theme (`.specs/theme-spec.md`) consumindo os tokens CSS puros definidos na Fase 1 — sem depender de Tailwind (decisão que substitui a menção anterior a "Tailwind v4.0 `@theme`" nesta linha; Studio pode oferecer Tailwind como opção de autoria por cima, não como núcleo).
 
-## ⚙️ Fase 3: Kernel do Sistema & Infraestrutura de Distribuição (Q1 2027)
-**Foco:** Backend, armazenamento e protocolo CLI — entra depois de já existir compiler + Studio produzindo componentes reais.
+## ⚙️ Fase 3: Kernel do Sistema & Infraestrutura de Distribuição (adiantada pra agora — ADR-015)
+**Foco:** Backend, armazenamento e protocolo CLI. Originalmente planejada pra depois do Studio existir; puxada pra agora (`app/backend`, ver `.specs/backend-architecture-spec.md`) — CLI (`CLI-001`/`002`) e Studio (`ST-001`/`002`) continuam pendentes, só o backend adiantou.
 
-*   **Novembro/2026 — Modelagem de Dados e Armazenamento Distribuído:** desenho e indexação das tabelas Postgres (particionamento por ID de usuário), schema `jsonb` estrito com validação via JSON Schema pra AST dos componentes, cluster MinIO com IAM rígido e Pre-signed URLs (expiração 180s).
-*   **Dezembro/2026 — Engine de Autenticação e Protocolo CLI:** backend em **Symfony** (troca de Laravel — ADR-003 em `.specs/ADRS.md`), fluxo OAuth2 pra autenticação em terminal via `npx beaconray login` (rotas de callback locais em portas efêmeras); instalador da CLI autodetectando framework do projeto (`package.json`/`tsconfig.json`/estrutura Vite/Next/Nuxt).
+*   **Modelagem de Dados e Armazenamento** (`BK-001`): tabelas Postgres (`users`, `libraries`, `versions`, `audit_logs`), schema `jsonb` estrito com validação via JSON Schema pra AST dos componentes (`.specs/schemas/component-ast.schema.json`, `BK-002`), MinIO com Pre-signed URLs (expiração 180s, `BK-003`). Particionamento por ID de usuário fica pra quando o volume justificar (não implementado agora, ver `.specs/backend-architecture-spec.md` non-goals).
+*   **Engine de Autenticação e Protocolo CLI** (`BK-005`): backend em **Symfony** (ADR-003), estrutura flat idiomática Symfony/API Platform — sem módulos de domínio (ADR-017); fluxo OAuth2 pra autenticação em terminal via `npx beaconray login` (`league/oauth2-server-bundle`, ADR-016); instalador da CLI autodetectando framework do projeto fica em `CLI-001`, ainda pendente.
 
 ## 🚀 Fase 4: Governança, Escopo e Análises (Q2 2027)
 **Foco:** Monitoramento, monetização e infraestrutura Enterprise.

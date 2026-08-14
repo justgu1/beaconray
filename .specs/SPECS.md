@@ -10,3 +10,6 @@
 | .specs/qa-automation-spec.md | QA-001: Playwright+axe-core contra o output HTML do compiler |
 | .specs/theme-spec.md | Beaconray Theme: paleta Royal Cyan, fonte Atkinson Hyperlegible, tokens genéricos de CSS, responsividade obrigatória |
 | .specs/component-catalog-spec.md | Catálogo v1 (34 componentes, 3 camadas) + convenção de padrão por categoria |
+| .specs/backend-architecture-spec.md | Backend Symfony (`app/backend`): estrutura flat, BK-001..005 |
+| .specs/versioning-spec.md | Modelo de versionamento de `Library`/`Version` (semver explícito, imutável, ponteiro `current`) |
+| .specs/schemas/component-ast.schema.json | JSON Schema do AST — fonte única validada pelo BK-002 |

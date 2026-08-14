@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://beaconray.dev/schemas/component-ast.schema.json",
+  "title": "Beaconray Component AST",
+  "description": "JSON Schema translation of .specs/ast-component-spec.md (v1.2) — single source of truth for BK-002's write-time validation. Any change here must be mirrored in ast-component-spec.md and vice versa.",
+  "type": "object",
+  "required": ["name", "props", "root"],
+  "additionalProperties": false,
+  "properties": {
+    "name": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$" },
+    "props": { "type": "array", "items": { "$ref": "#/$defs/prop" } },
+    "state": { "type": "array", "items": { "$ref": "#/$defs/stateVar" } },
+    "schema": {
+      "type": "object",
+      "required": ["@context", "@type"],
+      "properties": {
+        "@context": {},
+        "@type": {}
+      }
+    },
+    "root": { "$ref": "#/$defs/elementNode" }
+  },
+  "$defs": {
+    "propType": { "enum": ["string", "boolean", "number"] },
+    "prop": {
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "$ref": "#/$defs/propType" },
+        "required": { "type": "boolean" },
+        "enum": { "type": "array", "items": { "type": "string" } },
+        "example": { "type": ["string", "boolean", "number", "array"] }
+      }
+    },
+    "stateVar": {
+      "type": "object",
+      "required": ["name", "type", "initial"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "$ref": "#/$defs/propType" },
+        "initial": { "type": ["string", "boolean", "number"] }
+      }
+    },
+    "attributeValue": {
+      "oneOf": [
+        { "type": ["string", "boolean", "number"] },
+        {
+          "type": "object",
+          "required": ["bind"],
+          "additionalProperties": false,
+          "properties": { "bind": { "type": "string" } }
+        },
+        {
+          "type": "object",
+          "required": ["on"],
+          "additionalProperties": false,
+          "properties": { "on": { "type": "string" } }
+        }
+      ]
+    },
+    "textNode": {
+      "type": "object",
+      "required": ["text"],
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "required": ["bind"],
+              "additionalProperties": false,
+              "properties": { "bind": { "type": "string" } }
+            }
+          ]
+        }
+      }
+    },
+    "showNode": {
+      "type": "object",
+      "required": ["show", "children"],
+      "additionalProperties": false,
+      "properties": {
+        "show": {
+          "type": "object",
+          "required": ["bind"],
+          "additionalProperties": false,
+          "properties": {
+            "bind": { "type": "string" },
+            "focusOnShow": { "type": "boolean" }
+          }
+        },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/astNode" } }
+      }
+    },
+    "forNode": {
+      "type": "object",
+      "required": ["for", "children"],
+      "additionalProperties": false,
+      "properties": {
+        "for": {
+          "type": "object",
+          "required": ["each", "as"],
+          "additionalProperties": false,
+          "properties": {
+            "each": { "type": "string" },
+            "as": { "type": "string" }
+          }
+        },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/astNode" } }
+      }
+    },
+    "elementNode": {
+      "type": "object",
+      "required": ["tag"],
+      "additionalProperties": false,
+      "properties": {
+        "tag": { "type": "string" },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/attributeValue" }
+        },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/astNode" } }
+      }
+    },
+    "astNode": {
+      "oneOf": [
+        { "$ref": "#/$defs/textNode" },
+        { "$ref": "#/$defs/showNode" },
+        { "$ref": "#/$defs/forNode" },
+        { "$ref": "#/$defs/elementNode" }
+      ]
+    }
+  }
+}
