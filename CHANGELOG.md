@@ -100,7 +100,7 @@ Mid-round correction: the user's first instinct was to make the base(Layer 1-2)-
 # 13-08-2026
 ## CMP-L1 — Layer 1 structural components (Card, Container, Separator, Drawer, Modal)
 ### pr
-
+https://github.com/justgu1/beaconray/pull/7
 ### done
 Wrote `.specs/component-layer1-structural-spec.md` (props/AST shape per component, `no_code_without_matching_spec`) before touching any AST — `Card` (`article`), `Container` (`div`, `reverse` prop via a bound `style` ternary), `Separator` (`hr`, `spacing` prop mapped to `--br-space-*`), `Drawer` (`role="dialog"`, `position` prop, `state.open`+`show.focusOnShow` open/close), `Modal` (`role="dialog"`, mandatory header/footer, backdrop with explicit `role="button"` — a bare `div onClick` with no `role` is exactly what `component-quality-spec.md` rule 1 forbids). Authored all 5 as `compiler/examples/*.ast.json`; all 5 compile clean through every target (`.lite.tsx`, react, vue, astro, `qa-html`) and pass `validate.ts` unchanged. `qa/dist/run.js Card Container Separator Drawer Modal`: 0 WCAG 2.2 AA violations, reflow OK at 320px, for all five.
 
