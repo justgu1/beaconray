@@ -1,0 +1,29 @@
+{
+  "name": "SaveStatus",
+  "props": [],
+  "state": [
+    { "name": "saved", "type": "boolean", "initial": false }
+  ],
+  "root": {
+    "tag": "div",
+    "children": [
+      {
+        "tag": "button",
+        "attributes": {
+          "aria-label": "Save",
+          "onClick": { "on": "state.saved = true" }
+        },
+        "children": [{ "text": "Save" }]
+      },
+      {
+        "tag": "span",
+        "attributes": {
+          "aria-live": "polite"
+        },
+        "children": [
+          { "text": { "bind": "state.saved ? \"Saved!\" : \"\"" } }
+        ]
+      }
+    ]
+  }
+}

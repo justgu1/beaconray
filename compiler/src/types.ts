@@ -34,7 +34,7 @@ export interface TextNode {
 }
 
 export interface ShowNode {
-  show: { bind: string };
+  show: { bind: string; focusOnShow?: boolean };
   children: AstNode[];
 }
 
@@ -49,6 +49,7 @@ export interface ComponentAst {
   name: string;
   props: ComponentProp[];
   state?: StateVar[];
+  schema?: Record<string, unknown>;
   root: ElementNode;
 }
 

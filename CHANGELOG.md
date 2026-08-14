@@ -66,3 +66,20 @@ Found, mid-verification, that axe's `color-contrast` rule was reporting `inappli
 Updated `component-quality-spec.md` rule 5 (animation-only → generic theming) and added rule 8 (mandatory responsiveness). `Worklist.md` gained `THEME-001` (done) and `PLAT-001` (pending, future — see below). `Roadmap.md`'s Tailwind mentions (Fase 2) corrected to reflect the CSS-agnostic core.
 
 Also registered, not built, per a mid-round product idea: a future public marketplace for sharing themes/components (own repo or Studio-authored) with GitHub-style social ranking (stars, comments) — `Worklist.md` `PLAT-001`, `Roadmap.md` Fase 4 (Março/2027). The token-file theme architecture built this round is deliberately what would make a theme cleanly publishable later — swapping a theme never touches component code.
+
+# 13-08-2026
+## aria-live, focus-on-show, structured data (SEO-002) — closes QG-001
+### pr
+TBD (no PR yet — local work)
+### done
+Closed three items deferred across multiple rounds. Before committing to a focus-management approach, verified (manual testing, not assumed) that Mitosis's `hooks.onUpdate` with a `deps` array exists and compiles to `useEffect(() => {...}, [deps])` in React and a `computed`+`watch({ immediate: true })` pair in Vue — both re-fire on every dependency transition, not just initial mount (unlike plain `onMount`, which only fires once). Logged ADR-011.
+
+**aria-live** (`component-quality-spec.md` rule 3): `validate.ts` now requires `aria-live` on any node whose text/attribute binds to `state.*`, unless it's inside (itself or a descendant of) an element with any event binding — a deliberate heuristic (exempts by "any event nearby," not by parsing which exact state variable that event modifies). New fixture `compiler/examples/save-status.ast.json` (a save button + a separate status span) proves the real case: verified the rule passes when the span has `aria-live`, and rejects with a clean error when it doesn't.
+
+**`show.focusOnShow`** (`ast-component-spec.md` v1.2): generates a ref + `tabIndex: -1` on the Show block's first child and an `onUpdate` hook keyed to the show condition, calling `.focus()`. Added to `Counter`'s existing `Show` block — verified the generated React (`useEffect(..., [props.items && props.items.length > 0])`) and Vue (`computed`+`watch`) both re-fire correctly on each visibility transition, not just component mount. `for`-list focus-on-removal remains explicitly unsolved — needs runtime tracking beyond a `deps`-effect, revisit with a real list component.
+
+**Structured data (SEO-002)**: optional `schema` field on `ComponentAst` (JSON-LD, requires `@context`/`@type` — `validate.ts` rejects otherwise), emitted as `<script type="application/ld+json">` after the component markup in the static outputs. Added to the `Button` fixture; verified the emitted JSON parses cleanly.
+
+All three fixtures (`Button`, `Counter`, `SaveStatus`) re-verified end-to-end: `tsc -p compiler/tsconfig.json` builds clean, all 5 outputs generate per component, `qa/dist/run.js` reports 0 WCAG 2.2 AA violations across all three. `Worklist.md`: `QG-001` and `SEO-002` marked done.
+
+Combined as the next step after this round, not started now: cataloging the actual list of Beaconray components and their pattern/convention (props, states, events, variants).

@@ -36,6 +36,12 @@ function wrapQaHtml(name: string, html: string): string {
 `;
 }
 
+function withStructuredData(html: string, schema: Record<string, unknown> | undefined): string {
+  // SEO-002 — see .specs/mitosis-compiler-spec.md step 8.
+  if (!schema) return html;
+  return `${html}\n<script type="application/ld+json">${JSON.stringify(schema)}</script>`;
+}
+
 function writeFile(outDir: string, relPath: string, content: string) {
   const fullPath = path.join(outDir, relPath);
   fs.mkdirSync(path.dirname(fullPath), { recursive: true });
@@ -98,14 +104,14 @@ function main() {
       label: "astro",
       run: () => ({
         relPath: path.join("astro", `${ast.name}.astro`),
-        content: wrapAstro(renderStaticHtml(component, exampleProps)),
+        content: wrapAstro(withStructuredData(renderStaticHtml(component, exampleProps), ast.schema)),
       }),
     },
     {
       label: "qa-html",
       run: () => ({
         relPath: path.join("qa", `${ast.name}.html`),
-        content: wrapQaHtml(ast.name, renderStaticHtml(component, exampleProps)),
+        content: wrapQaHtml(ast.name, withStructuredData(renderStaticHtml(component, exampleProps), ast.schema)),
       }),
     },
   ];

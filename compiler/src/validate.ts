@@ -27,8 +27,19 @@ export function validateAst(ast: any): asserts ast is ComponentAst {
   if (!ast.root || typeof ast.root !== "object" || typeof ast.root.tag !== "string") {
     throw new Error("Invalid AST: missing 'root' field or missing 'tag'");
   }
+  if (ast.schema !== undefined) {
+    if (typeof ast.schema !== "object" || ast.schema === null || Array.isArray(ast.schema)) {
+      throw new Error("Invalid AST: 'schema', when present, must be an object");
+    }
+    if (!("@context" in ast.schema) || !("@type" in ast.schema)) {
+      throw new Error(
+        "Invalid AST: 'schema' is missing '@context' or '@type' — JSON-LD without these isn't usable by any crawler (component-quality-spec.md, rule 6)"
+      );
+    }
+  }
 
   validateQualityGate(ast.root as ElementNode, ast.name);
+  validateAriaLive(ast.root as ElementNode, false, false, ast.name);
 }
 
 // Quality-gate validation (v1) — see .specs/mitosis-compiler-spec.md,
@@ -122,6 +133,49 @@ function validateThemeTokens(style: string, componentName: string, path: string,
       `[${componentName}] ${path}: <${tag}> style has a fixed pixel width/height — use relative units instead (component-quality-spec.md, rule 8)`
     );
   }
+}
+
+// aria-live enforcement (component-quality-spec.md rule 3, v1.2) — a node
+// whose text/attribute binds to state.* needs 'aria-live' (self or
+// ancestor) unless it's inside (itself or a descendant of) an element with
+// any event binding. Heuristic: exempts by "any event nearby," not by
+// tracing which exact state variable that event modifies — documented
+// simplification, see .specs/component-quality-spec.md rule 3.
+const STATE_REF_RE = /\bstate\./;
+
+function validateAriaLive(node: AstNode, ownedByEvent: boolean, insideLiveRegion: boolean, componentName: string, path: string = "root") {
+  if (isTextNode(node)) {
+    if (isBinding(node.text) && STATE_REF_RE.test(node.text.bind) && !ownedByEvent && !insideLiveRegion) {
+      throw new Error(
+        `[${componentName}] ${path}: text bound to state ('${node.text.bind}') has no 'aria-live' region and isn't inside an element with an event binding (component-quality-spec.md, rule 3)`
+      );
+    }
+    return;
+  }
+
+  if (isShowNode(node) || isForNode(node)) {
+    const kind = isShowNode(node) ? "show" : "for";
+    node.children.forEach((child, i) => validateAriaLive(child, ownedByEvent, insideLiveRegion, componentName, `${path}>${kind}[${i}]`));
+    return;
+  }
+
+  const attrs = node.attributes ?? {};
+  const hasEvent = Object.values(attrs).some((value) => isEventBinding(value));
+  const hasAriaLive = attrs["aria-live"] !== undefined;
+  const nowOwned = ownedByEvent || hasEvent;
+  const nowLive = insideLiveRegion || hasAriaLive;
+
+  if (!nowOwned && !nowLive) {
+    for (const [key, value] of Object.entries(attrs)) {
+      if (isBinding(value) && STATE_REF_RE.test(value.bind)) {
+        throw new Error(
+          `[${componentName}] ${path}: <${node.tag}> attribute '${key}' bound to state ('${value.bind}') has no 'aria-live' region and isn't inside an element with an event binding (component-quality-spec.md, rule 3)`
+        );
+      }
+    }
+  }
+
+  (node.children ?? []).forEach((child, i) => validateAriaLive(child, nowOwned, nowLive, componentName, `${path}>${node.tag}[${i}]`));
 }
 
 function hasVisibleText(children: AstNode[]): boolean {
