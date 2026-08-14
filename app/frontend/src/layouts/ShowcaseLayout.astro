@@ -1,0 +1,57 @@
+---
+import '../../../../compiler/theme/tokens.css';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <style>
+      body {
+        font-family: var(--br-font-family-base);
+        color: var(--br-color-text);
+        background: var(--br-color-surface);
+        max-width: 960px;
+        margin: 0 auto;
+        padding: var(--br-space-6);
+      }
+      section {
+        margin-bottom: var(--br-space-8);
+        padding-bottom: var(--br-space-6);
+        border-bottom: 1px solid var(--br-color-border);
+      }
+      .pair {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--br-space-6);
+        align-items: flex-start;
+      }
+      .pair > div {
+        flex: 1 1 260px;
+      }
+      .pair h3 {
+        font-size: var(--br-font-size-sm);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--br-color-secondary);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{title}</h1>
+    <p>
+      Cada componente interativo aparece duas vezes — uma vez compilado para React,
+      uma vez para Vue — lado a lado, na mesma página, sob o mesmo tema. Qualquer
+      divergência visual ou de comportamento entre os dois fica visível aqui, em vez
+      de assumida.
+    </p>
+    <slot />
+  </body>
+</html>

@@ -30,6 +30,37 @@ function nextRefName(ctx: FocusContext): string {
   return `showRef${ctx.counter.n}`;
 }
 
+// React's DOM `style` prop requires an object, not a CSS-text string — a
+// literal string throws at runtime ("The `style` prop expects a mapping from
+// style properties to values, not a string"), confirmed by actually mounting
+// a compiled component in a real React app (never exercised before: prior
+// verification only ever read the generated code as text or ran axe-core
+// against the static HTML output, neither of which invokes React's own
+// runtime). Vue's output is unaffected either way — a literal style string is
+// valid there. Converting a literal `style` string into an object-expression
+// binding here (instead of leaving it in `properties`) fixes React while
+// leaving Vue's behavior unchanged, since both go through this same
+// conversion. Doesn't cover a *dynamic* `style` (`{ bind: <expression> }`) —
+// that's a separate, more invasive fix (needs a runtime helper, since the
+// expression can't be parsed at compile time) and is a known, tracked gap.
+const CSS_PROPERTY_RE = /-([a-z])/g;
+
+function cssTextToStyleObjectSource(cssText: string): string {
+  const entries = cssText
+    .split(";")
+    .map((decl) => decl.trim())
+    .filter(Boolean)
+    .map((decl) => {
+      const colonIndex = decl.indexOf(":");
+      const prop = decl.slice(0, colonIndex).trim();
+      const value = decl.slice(colonIndex + 1).trim();
+      const camelProp = prop.replace(CSS_PROPERTY_RE, (_, letter) => letter.toUpperCase());
+      return `${JSON.stringify(camelProp)}: ${JSON.stringify(value)}`;
+    });
+
+  return `{ ${entries.join(", ")} }`;
+}
+
 function splitAttributes(attributes: Record<string, AttributeValue> | undefined) {
   const properties: Record<string, any> = {};
   const bindings: Record<string, any> = {};
@@ -39,6 +70,8 @@ function splitAttributes(attributes: Record<string, AttributeValue> | undefined)
       bindings[key] = { code: value.on, bindingType: "function", type: "single" };
     } else if (isBinding(value)) {
       bindings[key] = { code: value.bind, bindingType: "expression", type: "single" };
+    } else if (key === "style" && typeof value === "string") {
+      bindings[key] = { code: cssTextToStyleObjectSource(value), bindingType: "expression", type: "single" };
     } else {
       properties[key] = value;
     }
@@ -67,10 +100,21 @@ function nodeToMitosis(node: AstNode, ctx: FocusContext): any {
       // onUpdate hook with the show condition as its dependency compiles to
       // useEffect(() => {...}, [deps]) in React and computed+watch in Vue —
       // both re-fire on every transition, not just initial mount.
+      // The ref guard (`${refName} &&`) matters specifically for Vue: its
+      // `watch(..., { immediate: true })` compiles to fire eagerly at
+      // component creation, including during SSR — where refs are never
+      // populated (there's no real DOM yet). Without the guard, every
+      // Vue SSR render of a mounted `show.focusOnShow` block throws
+      // "Cannot read properties of undefined (reading 'focus')" — confirmed
+      // by actually building a Vue island through Astro (SSRs by default,
+      // even for `client:load`), never caught before since this code had
+      // only ever been read as text or dynamically mounted client-only.
+      // React's useEffect doesn't run during SSR at all, so it was never
+      // affected — but the guard is harmless there too.
       const refName = nextRefName(ctx);
       ctx.refs[refName] = { argument: "null" };
       ctx.onUpdate.push({
-        code: `if (${node.show.bind}) { ${refName}.focus(); }`,
+        code: `if (${node.show.bind} && ${refName}) { ${refName}.focus(); }`,
         deps: `[${node.show.bind}]`,
         depsArray: [node.show.bind],
       });

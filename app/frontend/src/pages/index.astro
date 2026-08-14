@@ -1,0 +1,54 @@
+---
+import ShowcaseLayout from '../layouts/ShowcaseLayout.astro';
+
+import ButtonReact from '../../../../compiler/out/Button/react/Button.tsx';
+import ButtonVue from '../../../../compiler/out/Button/vue/Button.vue';
+import CounterReact from '../../../../compiler/out/Counter/react/Counter.tsx';
+import CounterVue from '../../../../compiler/out/Counter/vue/Counter.vue';
+import SaveStatusReact from '../../../../compiler/out/SaveStatus/react/SaveStatus.tsx';
+import SaveStatusVue from '../../../../compiler/out/SaveStatus/vue/SaveStatus.vue';
+---
+
+<ShowcaseLayout title="Beaconray — showcase de componentes">
+  <section>
+    <h2>Button</h2>
+    <div class="pair">
+      <div>
+        <h3>React</h3>
+        <ButtonReact client:load label="Click me" variant="primary" />
+      </div>
+      <div>
+        <h3>Vue</h3>
+        <ButtonVue client:load label="Click me" variant="primary" />
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Counter</h2>
+    <div class="pair">
+      <div>
+        <h3>React</h3>
+        <CounterReact client:load items={['Apple', 'Banana']} />
+      </div>
+      <div>
+        <h3>Vue</h3>
+        <CounterVue client:load items={['Apple', 'Banana']} />
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>SaveStatus</h2>
+    <div class="pair">
+      <div>
+        <h3>React</h3>
+        <SaveStatusReact client:load />
+      </div>
+      <div>
+        <h3>Vue</h3>
+        <SaveStatusVue client:load />
+      </div>
+    </div>
+  </section>
+</ShowcaseLayout>

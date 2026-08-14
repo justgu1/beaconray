@@ -13,3 +13,4 @@
 | .specs/backend-architecture-spec.md | Backend Symfony (`app/backend`): estrutura flat, BK-001..005 |
 | .specs/versioning-spec.md | Modelo de versionamento de `Library`/`Version` (semver explícito, imutável, ponteiro `current`) |
 | .specs/schemas/component-ast.schema.json | JSON Schema do AST — fonte única validada pelo BK-002 |
+| .specs/component-showcase-spec.md | `app/frontend`: showcase Astro com islands React/Vue lado a lado, 2 bugs reais de SSR achados e corrigidos |
