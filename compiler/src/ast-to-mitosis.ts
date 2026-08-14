@@ -115,13 +115,17 @@ function nodeToMitosis(node: AstNode, ctx: FocusContext): any {
   });
 }
 
-export function astToMitosisComponent(ast: ComponentAst): MitosisComponent {
+export function astToMitosisComponent(ast: ComponentAst, opts?: { forStatic?: boolean }): MitosisComponent {
   const state: Record<string, any> = {};
   for (const s of ast.state ?? []) {
     // Shape verified against Mitosis's `useStore` hook parsing (0.14.0) —
     // see .specs/mitosis-compiler-spec.md. `useState` does NOT populate this
     // field in this version, so `useStore`'s shape is the one we target.
-    state[s.name] = { code: JSON.stringify(s.initial), type: "property", propertyType: "normal" };
+    // `forStatic` (ADR-014, resolves the ADR-013 gap): the static/SEO render
+    // has no runtime, so a state var gating real content needs its own
+    // baked value, distinct from the interactive targets' real `initial`.
+    const value = opts?.forStatic && s.staticValue !== undefined ? s.staticValue : s.initial;
+    state[s.name] = { code: JSON.stringify(value), type: "property", propertyType: "normal" };
   }
 
   const ctx: FocusContext = { refs: {}, onUpdate: [], counter: { n: 0 } };

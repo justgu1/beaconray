@@ -68,6 +68,12 @@ function main() {
   const ast = parsed as ComponentAst;
 
   const component = astToMitosisComponent(ast);
+  // Separate component build for the static/SEO targets (astro, qa-html) —
+  // bakes each state var's `staticValue` (falling back to `initial`) instead
+  // of always the runtime `initial`, so content gated by state (e.g. an
+  // overlay's `open`) is actually crawlable/auditable. See ADR-014 —
+  // resolves the gap found and documented in ADR-013.
+  const staticComponent = astToMitosisComponent(ast, { forStatic: true });
   const outDir = path.join(__dirname, "..", "out", ast.name);
   const exampleProps = buildExampleProps(ast);
 
@@ -104,14 +110,14 @@ function main() {
       label: "astro",
       run: () => ({
         relPath: path.join("astro", `${ast.name}.astro`),
-        content: wrapAstro(withStructuredData(renderStaticHtml(component, exampleProps), ast.schema)),
+        content: wrapAstro(withStructuredData(renderStaticHtml(staticComponent, exampleProps), ast.schema)),
       }),
     },
     {
       label: "qa-html",
       run: () => ({
         relPath: path.join("qa", `${ast.name}.html`),
-        content: wrapQaHtml(ast.name, withStructuredData(renderStaticHtml(component, exampleProps), ast.schema)),
+        content: wrapQaHtml(ast.name, withStructuredData(renderStaticHtml(staticComponent, exampleProps), ast.schema)),
       }),
     },
   ];

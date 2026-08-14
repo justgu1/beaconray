@@ -1,0 +1,33 @@
+{
+  "name": "Card",
+  "props": [
+    { "name": "title", "type": "string", "required": false, "example": "Card title" }
+  ],
+  "root": {
+    "tag": "article",
+    "attributes": {
+      "style": "background-color: var(--br-color-surface); border: 1px solid var(--br-color-border); border-radius: var(--br-radius-base); padding: var(--br-space-4); max-width: 100%; overflow-wrap: break-word;"
+    },
+    "children": [
+      {
+        "show": { "bind": "props.title" },
+        "children": [
+          {
+            "tag": "h3",
+            "attributes": {
+              "style": "margin: 0 0 var(--br-space-2) 0; color: var(--br-color-text); font-size: var(--br-font-size-lg);"
+            },
+            "children": [{ "text": { "bind": "props.title" } }]
+          }
+        ]
+      },
+      {
+        "tag": "div",
+        "attributes": {
+          "style": "color: var(--br-color-text); font-size: var(--br-font-size-base);"
+        },
+        "children": [{ "text": "Card content goes here." }]
+      }
+    ]
+  }
+}

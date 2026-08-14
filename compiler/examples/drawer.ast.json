@@ -1,0 +1,58 @@
+{
+  "name": "Drawer",
+  "props": [
+    { "name": "position", "type": "string", "enum": ["top", "right", "bottom", "left"], "required": false, "example": "right" }
+  ],
+  "state": [
+    { "name": "open", "type": "boolean", "initial": false, "staticValue": true }
+  ],
+  "root": {
+    "tag": "div",
+    "children": [
+      {
+        "tag": "button",
+        "attributes": {
+          "aria-label": "Open drawer",
+          "onClick": { "on": "state.open = true" },
+          "style": "background-color: var(--br-color-primary); color: var(--br-color-on-primary); padding: var(--br-space-2) var(--br-space-4); border-radius: var(--br-radius-base); max-width: 100%;"
+        },
+        "children": [{ "text": "Open drawer" }]
+      },
+      {
+        "show": { "bind": "state.open", "focusOnShow": true },
+        "children": [
+          {
+            "tag": "div",
+            "attributes": {
+              "role": "dialog",
+              "aria-modal": "true",
+              "aria-label": "Drawer",
+              "data-position": { "bind": "props.position" },
+              "style": {
+                "bind": "\"position: fixed; z-index: 1000; background-color: var(--br-color-surface); border: 1px solid var(--br-color-border); padding: var(--br-space-4); overflow: auto; overflow-wrap: break-word; max-width: 100%; max-height: 100%; \" + (props.position === \"top\" ? \"top: 0; left: 0; right: 0; height: 40%;\" : props.position === \"bottom\" ? \"bottom: 0; left: 0; right: 0; height: 40%;\" : props.position === \"left\" ? \"top: 0; bottom: 0; left: 0; width: 60%;\" : \"top: 0; bottom: 0; right: 0; width: 60%;\")"
+              }
+            },
+            "children": [
+              {
+                "tag": "button",
+                "attributes": {
+                  "aria-label": "Close drawer",
+                  "onClick": { "on": "state.open = false" },
+                  "style": "background-color: var(--br-color-primary); color: var(--br-color-on-primary); padding: var(--br-space-1) var(--br-space-2); border-radius: var(--br-radius-sm);"
+                },
+                "children": [{ "text": "Close" }]
+              },
+              {
+                "tag": "div",
+                "attributes": {
+                  "style": "margin-top: var(--br-space-4); color: var(--br-color-text);"
+                },
+                "children": [{ "text": "Drawer content." }]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

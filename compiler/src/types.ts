@@ -14,6 +14,14 @@ export interface StateVar {
   name: string;
   type: PropType;
   initial: string | number | boolean;
+  // Optional, v1.3 (ast-component-spec.md) — the value baked into the
+  // static/SEO render (Astro, qa-html) instead of `initial`. Needed because
+  // `render-static.ts` bakes state at generation time (no runtime), so a
+  // state var that gates real content (e.g. an overlay's `open`) would
+  // otherwise always render closed to crawlers/axe-core, regardless of what
+  // makes sense for the interactive React/Vue targets. Falls back to
+  // `initial` when absent — fully additive, no existing AST changes meaning.
+  staticValue?: string | number | boolean;
 }
 
 export type AttributeValue =
