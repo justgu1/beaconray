@@ -1,6 +1,14 @@
 # Rodando `/app` localmente
 
-Ordem: dev-infra pessoal → backend → frontend. Backend e frontend são projetos independentes (sem workspace), cada um com seu próprio `node_modules`/`vendor`.
+Ordem: dev-infra pessoal → backend + frontend juntos. Backend e frontend são projetos independentes (sem workspace), cada um com seu próprio `node_modules`/`vendor`.
+
+## Via `make` (depois do setup de primeira vez abaixo)
+
+```bash
+cd /home/guilherme/pessoal/dev-infra && make up      # Postgres/Redis/MinIO/Traefik, detached
+cd .../app && make up                                 # backend + frontend, logs ao vivo nesta janela
+```
+`Ctrl+C` em `make up` do `app` mata os dois. Se sobrar processo, `make down` garante limpeza (mata por padrão de comando, não depende de PID).
 
 ## 1. Dev-infra pessoal (Postgres/Redis/MinIO/Traefik)
 
@@ -99,16 +107,18 @@ Abre `http://localhost:4321` — mostra Button/Counter/SaveStatus, cada um com i
 
 **Sobre `npm run dev` (`astro dev`):** testado nesta sessão e **não funciona** neste ambiente sandboxed — o supervisor de background novo do Astro 7.2 (`astro dev --background`/`stop`/`status`/`logs`, mencionado no `app/frontend/CLAUDE.md` gerado pelo scaffold) morre com "Dev server process exited before becoming ready" sem log útil, provavelmente uma restrição do sandbox (não do código — `astro build` e `astro preview` funcionam normalmente, testados várias vezes). No seu terminal normal (fora deste ambiente), `npm run dev` deve funcionar sem problema — só documentando a limitação real encontrada aqui, não escondendo.
 
-## Ordem resumida pra já ter tudo rodando
+## Ordem resumida pra já ter tudo rodando (depois do setup de primeira vez)
 ```bash
-# 1
+cd /home/guilherme/pessoal/dev-infra && make up
+cd /home/guilherme/pessoal/justgui/projetos/beaconray/app && make up
+```
+Equivalente manual, passo a passo (o que `make up` do `app` faz por baixo):
+```bash
 cd /home/guilherme/pessoal/dev-infra && docker compose up -d
 
-# 2 (backend, se já migrado/bucket criado antes, só isso)
-cd /home/guilherme/pessoal/justgui/projetos/beaconray/app/backend
-php -S 127.0.0.1:8123 -t public public/index.php
+cd .../compiler && npm run build && node dist/compile.js examples/button.ast.json   # + counter/save-status
 
-# 3 (frontend — npm run dev não funciona neste ambiente sandboxed, ver nota acima)
-cd /home/guilherme/pessoal/justgui/projetos/beaconray/app/frontend
-npm run build && npx astro preview --port 4321
+cd .../app/backend && php -S 127.0.0.1:8123 -t public public/index.php &
+
+cd .../app/frontend && npm run build && npx astro preview --port 4321
 ```
