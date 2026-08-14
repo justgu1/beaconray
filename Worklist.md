@@ -26,12 +26,16 @@ Este documento gerencia as tarefas técnicas de baixo nível necessárias para a
 | **QA-004** | Testes | Auditoria via URL: generalizar `qa/src/run.ts` pra aceitar URL arbitrária (não só output local do compiler) — feature de plataforma, usuário aponta qualquer site/componente/app e recebe feedback de SEO/GEO/WCAG. | QA-001 | Alta | ⏳ Pendente (futuro, sem prazo — rastreado em `.specs/qa-automation-spec.md`) |
 | **THEME-001** | Qualidade | Beaconray Theme (`.specs/theme-spec.md`): paleta Royal Cyan + fonte Atkinson Hyperlegible, tokens genéricos de CSS (cor/tipografia/espaço/animação) via custom properties puras, foco visível (fecha WCAG 2.4.7), responsividade obrigatória (sem largura fixa em `px`). | QG-001 | Alta | ✅ Concluído (`compiler/theme/tokens.css` + enforcement em `validate.ts`; contraste real confirmado via axe-core — 6.57:1 medido, bate com o cálculo) |
 | **PLAT-001** | Plataforma | Marketplace público: publicar tema/componente (do repo próprio via CLI ou direto do Studio), tornar público, ranking social (estrelas, comentários, downloads) — estilo GitHub. | BK-001, BK-005, CLI-002, ST-002 | Alta | ⏳ Pendente (futuro, sem prazo) |
+| **CAT-001** | Catálogo | Escrever `.specs/component-catalog-spec.md`: lista v1 fechada (34 componentes, 3 camadas) + convenção de padrão por categoria (form control, overlay, estrutural, navegação). | HN-001 | Média | ✅ Concluído (ADR-012) |
+| **CMP-L1** | Componentes | Construir a Camada 1 (base estrutural): `Card`, `Container` (grid embutido), `Separator`, `Drawer` (posição configurável), `Modal` (header/footer internos, backdrop, empilhamento). | CAT-001, CP-002 | Alta | ⏳ Pendente |
+| **CMP-L2** | Componentes | Construir a Camada 2 (interativos): `Link`, `Button` (✅ já existe), `Input` (label flutuante), `Switcher`, `Dropdown` (busca + infinite scroll assíncrono), `Date Picker`, `Accordion`, `Popover`, `Toast`, `Tooltip` (troca de foco sem flicker), `Breadcrumb`, `Paginator`, `Avatar`, `Badge`, `Progress bar`, `Spinner`, `File Upload/Dropzone`, `Color Picker`. | CAT-001, CP-002 | Alta | ⏳ Pendente |
+| **CMP-L3** | Componentes | Construir a Camada 3 (complexos, em cima da base): `Text/Content Editor`, `Carousel`, `DataTable`, `Stepper/Wizard`, `Chart`, `Navbar`, `Resizable`, `Tabs`, `Tree View`, `Command Palette`, `Calendar`. | CMP-L1, CMP-L2 | Crítica | ⏳ Pendente |
 
 ---
 
 ## 📈 Métricas de Progresso
-*   **Total de Tarefas:** 22
-*   **Concluídas:** 8 (HN-001, QG-001, QG-002, CP-001, QA-001, SEO-001, SEO-002, THEME-001)
+*   **Total de Tarefas:** 26
+*   **Concluídas:** 9 (HN-001, QG-001, QG-002, CP-001, QA-001, SEO-001, SEO-002, THEME-001, CAT-001)
 *   **Em andamento:** 1 (CP-002)
-*   **Complexidade Crítica / Alta:** 12
-*   **Estimativa de Esforço Base:** 160h-220h de engenharia focada (não recalculado desde a adição de HN-001/QG-001/QG-002/QA-002/QA-003/SEO-001/SEO-002/QA-004/THEME-001/PLAT-001 — revisar na próxima rodada de planejamento).
+*   **Complexidade Crítica / Alta:** 14
+*   **Estimativa de Esforço Base:** 160h-220h de engenharia focada (não recalculado desde a adição de HN-001/QG-001/QG-002/QA-002/QA-003/SEO-001/SEO-002/QA-004/THEME-001/PLAT-001/CAT-001/CMP-L1/CMP-L2/CMP-L3 — revisar na próxima rodada de planejamento; CMP-L1/L2/L3 sozinhas provavelmente superam a estimativa original inteira, 34 componentes reais é trabalho substancial).
